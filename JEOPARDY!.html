@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeopardy!</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .question:hover {
+      text-decoration: underline;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
+
+    .board {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .board .row {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+    }
+
+    .board .row .tile {
+      top: 0;
+      bottom: 0;
+      flex: 1;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3.5vw;
+      font-family: impact;
+      color: #fff;
+      background: linear-gradient(to top left, #000088, #0000ff);
+      border: 3px solid #000;
+    }
+
+    .board .row .question-value {
+      display: block;
+      color: #fba61d;
+    }
+
+    .board .row .question-answer {
+      display: none;
+    }
+
+    .board .row .tile.active {
+      border-width: 0;
+      font-size: 4rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 5;
+    }
+
+    .board .row .tile.active .question-value {
+      display: none;
+    }
+
+    .board .row .tile.active .question-answer {
+      display: block;
+      text-align: center;
+    }
+
+    .category-title {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="board" id="gameboard"></div>
+  <script>
+    const categories = [
+      {
+        name: 'Category 1',
+        questions: [
+          { value: 200, question: 'Question 1', answer: 'Answer 1' },
+          { value: 400, question: 'Question 2', answer: 'Answer 2' },
+          { value: 600, question: 'Question 3', answer: 'Answer 3' },
+          { value: 800, question: 'Question 4', answer: 'Answer 4' },
+          { value: 1000, question: 'Question 5', answer: 'Answer 5' }
+        ]
+      },
+      {
+        name: 'Category 2',
+        questions: [
+          { value: 200, question: 'Question 1', answer: 'Answer 1' },
+          { value: 400, question: 'Question 2', answer: 'Answer 2' },
+          { value: 600, question: 'Question 3', answer: 'Answer 3' },
+          { value: 800, question: 'Question 4', answer: 'Answer 4' },
+          { value: 1000, question: 'Question 5', answer: 'Answer 5' }
+        ]
+      },
+      {
+        name: 'Category 3',
+        questions: [
+          { value: 200, question: 'Question 1', answer: 'Answer 1' },
+          { value: 400, question: 'Question 2', answer: 'Answer 2' },
+          { value: 600, question: 'Question 3', answer: 'Answer 3' },
+          { value: 800, question: 'Question 4', answer: 'Answer 4' },
+          { value: 1000, question: 'Question 5', answer: 'Answer 5' }
+        ]
+      },
+      {
+        name: 'Category 3',
+        questions: [
+          { value: 200, question: 'Question 1', answer: 'Answer 1' },
+          { value: 400, question: 'Question 2', answer: 'Answer 2' },
+          { value: 600, question: 'Question 3', answer: 'Answer 3' },
+          { value: 800, question: 'Question 4', answer: 'Answer 4' },
+          { value: 1000, question: 'Question 5', answer: 'Answer 5' }
+        ]
+      },
+      {
+        name: 'Category 4',
+        questions: [
+          { value: 200, question: 'Question 1', answer: 'Answer 1' },
+          { value: 400, question: 'Question 2', answer: 'Answer 2' },
+          { value: 600, question: 'Question 3', answer: 'Answer 3' },
+          { value: 800, question: 'Question 4', answer: 'Answer 4' },
+          { value: 1000, question: 'Question 5', answer: 'Answer 5' }
+        ]
+      },
+      {
+        name: 'Category 5',
+        questions: [
+          { value: 200, question: 'Question 1', answer: 'Answer 1' },
+          { value: 400, question: 'Question 2', answer: 'Answer 2' },
+          { value: 600, question: 'Question 3', answer: 'Answer 3' },
+          { value: 800, question: 'Question 4', answer: 'Answer 4' },
+          { value: 1000, question: 'Question 5', answer: 'Answer 5' }
+        ]
+      }
+    ];
+
+    function generateGameBoard() {
+      const gameboard = document.getElementById('gameboard');
+
+      const headerRow = document.createElement('div');
+      headerRow.classList.add('row');
+      categories.forEach(category => {
+        const title = document.createElement('div');
+        title.classList.add('tile', 'category-title');
+        title.textContent = category.name;
+        headerRow.appendChild(title);
+      });
+      gameboard.appendChild(headerRow);
+
+      for (let i = 0; i < 5; i++) {
+        const row = document.createElement('div');
+        row.classList.add('row');
+
+        categories.forEach((category, categoryIndex) => {
+          const question = category.questions[i];
+          const tile = document.createElement('div');
+          tile.classList.add('tile');
+
+          const value = document.createElement('span');
+          value.classList.add('question-value');
+          value.textContent = `$${question.value}`;
+
+          const answer = document.createElement('span');
+          answer.classList.add('question-answer');
+          answer.textContent = question.answer;
+
+          tile.appendChild(value);
+          tile.appendChild(answer);
+
+          let clickCount = 0;
+          let clickedTileIndex = null;
+
+          tile.addEventListener('click', () => {
+            clickCount++;
+            clickedTileIndex = categoryIndex;
+
+            if (clickCount === 1) {
+              answer.textContent = question.question;
+              tile.classList.add('active');
+            } else if (clickCount === 2) {
+              answer.textContent = question.answer;
+            } else if (clickCount === 3) {
+              tile.textContent = '';
+              tile.style.cursor = 'not-allowed';
+              tile.style.pointerEvents = 'none';
+              tile.classList.remove('active');
+              clickCount = 0;
+              clickedTileIndex = null;
+            }
+          });
+
+          row.appendChild(tile);
+        });
+
+        gameboard.appendChild(row);
+      }
+    }
+
+    window.addEventListener('load', generateGameBoard);
+  </script>
+</body>
+
+</html>
